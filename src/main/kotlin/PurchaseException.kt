@@ -1,0 +1,1 @@
+class PurchaseException(message: String) : Throwable(message)
