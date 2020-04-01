@@ -17,13 +17,17 @@ class Purchase {
         private set
 
     fun increasePhoneLines() {
-        phoneLines++
-        updatePrice(150.0)
+        if (phoneLines < 8) {
+            phoneLines++
+            updatePrice(150.0)
+        }
     }
 
     fun decreasePhoneLines() {
-        phoneLines--
-        updatePrice(-150.0)
+        if (phoneLines > 0) {
+            phoneLines--
+            updatePrice(-150.0)
+        }
     }
 
     fun toggleInternetConnection() {
