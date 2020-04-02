@@ -47,13 +47,15 @@ class PurchaseTest {
         }
     }
 
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     inner class `phone lines` {
 
-        @Test
-        fun `number should not exceed 8`() {
+        @ParameterizedTest
+        @MethodSource("phoneLinesCheckUpperBoundary")
+        fun `number should not exceed 8`(numberOfPhoneLines: Int) {
             // when
-            for (e in 0..98) {  // Should not be able to increase more than 8
+            for (i in 1..numberOfPhoneLines) {  // Should not be able to increase more than 8
                 purchase.increasePhoneLines()
             }
 
@@ -64,7 +66,7 @@ class PurchaseTest {
         @Test
         fun `should decrease`() {
             // when
-            for (e in 1..5) {
+            for (i in 1..5) {
                 purchase.increasePhoneLines()  // will be increased to 5
             }
             purchase.decreasePhoneLines()  // will then decrease to 4
@@ -72,6 +74,29 @@ class PurchaseTest {
             // then
             purchase.phoneLines `should be` 4
         }
+
+        @ParameterizedTest
+        @MethodSource("phoneLinesCheckLowerBoundary")
+        fun `should not decrease below 0`(startingPoint: Int, decreaseAmount: Int) {
+            // when
+            for (i in 1..startingPoint) {
+                purchase.increasePhoneLines()
+            }
+            for (i in decreaseAmount downTo -50) { // should never be able to go below 0
+                purchase.decreasePhoneLines()
+            }
+            // then
+            purchase.phoneLines `should not be less than` 0
+        }
+
+        @Suppress("unused")
+        fun phoneLinesCheckUpperBoundary() = listOf(7, 8, 9)
+
+        @Suppress("unused")
+        fun phoneLinesCheckLowerBoundary() = listOf(
+            Arguments.of(4, 3),
+            Arguments.of(4, 4),
+            Arguments.of(4, 5))
     }
 
     @Nested
